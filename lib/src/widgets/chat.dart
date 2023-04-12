@@ -83,6 +83,7 @@ class Chat extends StatefulWidget {
     this.scrollPhysics,
     this.scrollToUnreadOptions = const ScrollToUnreadOptions(),
     this.showUserAvatars = false,
+    this.showCurrentUserAvatar = false,
     this.showUserNames = false,
     this.systemMessageBuilder,
     this.textMessageBuilder,
@@ -274,6 +275,7 @@ class Chat extends StatefulWidget {
   /// See [Message.showUserAvatars].
   final bool showUserAvatars;
 
+  final bool showCurrentUserAvatar;
   /// Show user names for received messages. Useful for a group chat. Will be
   /// shown only on text messages.
   final bool showUserNames;
@@ -588,6 +590,7 @@ class ChatState extends State<Chat> {
           showAvatar: map['nextMessageInGroup'] == false,
           showName: map['showName'] == true,
           showStatus: map['showStatus'] == true,
+          showCurrentUserAvatar: widget.showCurrentUserAvatar,
           showUserAvatars: widget.showUserAvatars,
           textMessageBuilder: widget.textMessageBuilder,
           textMessageOptions: widget.textMessageOptions,

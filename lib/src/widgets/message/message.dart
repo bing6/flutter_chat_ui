@@ -47,6 +47,7 @@ class Message extends StatelessWidget {
     required this.showName,
     required this.showStatus,
     required this.showUserAvatars,
+    required this.showCurrentUserAvatar,
     this.textMessageBuilder,
     required this.textMessageOptions,
     required this.usePreviewData,
@@ -154,6 +155,8 @@ class Message extends StatelessWidget {
   /// Show user avatars for received messages. Useful for a group chat.
   final bool showUserAvatars;
 
+  final bool showCurrentUserAvatar;
+
   /// Build a text message inside predefined bubble.
   final Widget Function(
     types.TextMessage, {
@@ -230,7 +233,7 @@ class Message extends StatelessWidget {
               right: isMobile ? query.padding.right : 0,
             ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         textDirection: bubbleRtlAlignment == BubbleRtlAlignment.left
             ? null
@@ -287,6 +290,7 @@ class Message extends StatelessWidget {
                     )
                   : null,
             ),
+          if (currentUserIsAuthor && showCurrentUserAvatar) _avatarBuilder(),
         ],
       ),
     );
