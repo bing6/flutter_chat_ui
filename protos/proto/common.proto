@@ -1,0 +1,11 @@
+syntax = "proto3";
+option go_package = "./protos";
+
+message State {
+  int32 Code = 1;
+  string Msg = 2;
+}
+
+message Pong {
+  int64 Timestamp = 1;
+}

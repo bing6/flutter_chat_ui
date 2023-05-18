@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,6 +14,7 @@ import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'wsclient.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(const MyApp()));
@@ -34,17 +36,110 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
+// Handshake represents a handshake: request(client) <====> handshake response(server).
+const int pHandshake = 0x01;
+// HandshakeAck represents a handshake ack from client to server.
+const int pHandshakeAck = 0x02;
+// Heartbeat represents a heartbeat.
+const int pHeartbeat = 0x03;
+// Data represents a common data packet.
+const int pData = 0x04;
+// Kick represents a kick off packet.
+const int pKick = 0x05;
+
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   final _user = const types.User(
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
 
+  late WSClient _client;
+
+  // Disconnect message from server.
+
   @override
   void initState() {
     super.initState();
-    _loadMessages();
+    final handshakeData = {
+      'Sys': {
+        'platform': 'mac-1',
+        'libVersion': '0.3.5-release', // 抄的.
+        'clientBuildNumber': '111',
+        'clientVersion': '1.0.0',
+      },
+      'User': {
+        'token': 'ka;lsdfjaskfjkvcz',
+      },
+    };
+
+    _client = WSClient(handshakeData, debug: true);
+    _client.onHandshake = () {
+      debugPrint('连接完成啦...可以发消息啦');
+      Timer.periodic(const Duration(seconds: 5), (timer) {
+        _client.ping();
+      });
+    };
+    _client.onBroadcast = () {};
+    _client.onDisconnect = () {
+      debugPrint('连接断开啦...');
+    };
+    _client.connect(Uri.parse('ws://127.0.0.1:3051'));
+
+    return;
+    // _loadMessages();.
   }
+
+  //
+  // /**
+  //  *
+  //  *
+  //  * Protocol.strdecode = function(buffer) {
+  //     var bytes = new ByteArray(buffer);
+  //     var array = [];
+  //     var offset = 0;
+  //     var charCode = 0;
+  //     var end = bytes.length;
+  //     while(offset < end){
+  //     if(bytes[offset] < 128){
+  //     charCode = bytes[offset];
+  //     offset += 1;
+  //     }else if(bytes[offset] < 224){
+  //     charCode = ((bytes[offset] & 0x3f)<<6) + (bytes[offset+1] & 0x3f);
+  //     offset += 2;
+  //     }else{
+  //     charCode = ((bytes[offset] & 0x0f)<<12) + ((bytes[offset+1] & 0x3f)<<6) + (bytes[offset+2] & 0x3f);
+  //     offset += 3;
+  //     }
+  //     array.push(charCode);
+  //     }
+  //     return String.fromCharCode.apply(null, array);
+  //     };
+  //  */
+  // String strdecode(Uint8List buffer) {
+  //   var charCode = 0;
+  //   var offset = 0;
+  //   var end = buffer.length;
+  //   var arr = List<int>.empty(growable: true);
+  //
+  //   while (offset < end) {
+  //     if (buffer[offset] < 128) {
+  //       charCode = buffer[offset];
+  //       offset += 1;
+  //     } else if (buffer[offset] < 244) {
+  //       charCode = ((buffer[offset] & 0x3f) << 6) + (buffer[offset + 1] & 0x3f);
+  //       offset += 2;
+  //     } else {
+  //       charCode = ((buffer[offset] & 0x0f) << 12) + ((buffer[offset + 1] & 0x3f) << 6) + (buffer[offset + 2] & 0x3f);
+  //       offset += 3;
+  //     }
+  //
+  //     arr.add(charCode);
+  //   }
+  //
+  //   print('SSSS -> ${arr}');
+  //
+  //   return String.fromCharCodes(arr);
+  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -162,10 +257,8 @@ class _ChatPageState extends State<ChatPage> {
 
       if (message.uri.startsWith('http')) {
         try {
-          final index =
-              _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage =
-              (_messages[index] as types.FileMessage).copyWith(
+          final index = _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
             isLoading: true,
           );
 
@@ -184,10 +277,8 @@ class _ChatPageState extends State<ChatPage> {
             await file.writeAsBytes(bytes);
           }
         } finally {
-          final index =
-              _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage =
-              (_messages[index] as types.FileMessage).copyWith(
+          final index = _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
             isLoading: null,
           );
 
@@ -228,9 +319,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void _loadMessages() async {
     final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final messages = (jsonDecode(response) as List).map((e) => types.Message.fromJson(e as Map<String, dynamic>)).toList();
 
     setState(() {
       _messages = messages;

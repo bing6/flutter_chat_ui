@@ -1,0 +1,29 @@
+syntax = "proto3";
+option go_package = "./protos";
+import "protos/proto/common.proto";
+
+
+message RPCOnlineReq {
+  string Token = 1;
+  string IP = 2;
+  string Platform = 3;
+  string Version = 4;
+  string BuildNumber = 5;
+}
+
+message RPCOnlineRes {
+  // 调用状态
+  State State = 1;
+  // 用户ID
+  int64 UserID = 2;
+}
+
+message RPCOfflineReq {
+  // 用户ID
+  int64 UserID = 1;
+}
+
+message RPCOfflineRes {
+  // 调用状态
+  State State = 1;
+}

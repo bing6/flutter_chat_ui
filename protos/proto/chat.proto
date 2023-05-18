@@ -1,0 +1,75 @@
+syntax = "proto3";
+option go_package = "./protos";
+import "protos/proto/common.proto";
+
+// 机器人信息
+message RobotData {
+  // 唯一ID
+  int64 ID = 1;
+  // 机器人名称
+  string Name = 2;
+  // 机器人图片地址
+  string Character = 4;
+  // 头像图片地址
+  string Avatar = 5;
+  // 性别
+  int32 Gender = 6;
+  // 标签
+  string Tags = 7;
+  // 是否为默认使用
+  int32 IsDefault = 8;
+  // 机器人属于那个系列
+  int32 Series = 9;
+  // 记录更新时间
+  int64 UpdateAt = 10;
+  // 记录创建时间
+  int64 CreateAt = 11;
+}
+
+// 请求创建机器人
+message RPCNewRobotReq {
+  // 机器人名称
+  string Name = 1;
+  // 机器人性别
+  int32 Gender = 2;
+  // 机器人属于那个系列
+  int32 Series = 3;
+  // 机器人标签
+  string Tags = 4;
+}
+
+// 返回创建机器人信息
+message RPCNewRobotRes {
+  // 调用状态
+  State State = 1;
+  // 返回结果->机器人信息
+  RobotData Data = 2;
+}
+
+// 返回机器人列表
+message RPCRobotListRes {
+  // 调用状态
+  State State = 1;
+  // 返回结果->机器人列表
+  repeated RobotData Items = 2;
+}
+
+// 请求与机器人聊天
+message RPCRobotMessageReq {
+  string CID = 1;
+  int64 From = 2;
+  int64 To = 3;
+  string Content = 4;
+}
+
+
+message REQChatMessage {
+  string Id = 1;
+  int64 From = 2;
+  int64 To = 3;
+  string Content = 4;
+}
+
+message RESChatMessage {
+  State State = 1;
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+option go_package = "./protos";
+import "protos/proto/common.proto";
+
+// 启动聊天机器人实例
+message RPCBootRobotReq {
+  int64 RobotId = 1;
+}
+
+message RPCBootRobotRes {
+  State State = 1;
+}

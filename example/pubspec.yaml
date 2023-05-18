@@ -45,6 +45,8 @@ dependencies:
   open_filex: ^4.2.2
   path_provider: ^2.0.11
   uuid: ^3.0.6
+  web_socket_channel: ^2.4.0
+  protobuf: ^2.1.0
 
 dev_dependencies:
   dart_code_metrics: ^4.21.3
