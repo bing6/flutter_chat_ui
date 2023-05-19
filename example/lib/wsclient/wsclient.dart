@@ -32,12 +32,14 @@ const msgCompressRouteMask = 0x1;
 const msgTypeMask = 0x7;
 
 // RPC请求回调. 序列化方式为Json时，返回Map, 为protoc时返回UInt8List.
-typedef WSRequestCallback = void Function(dynamic res, Exception? error);
+typedef WSRequestHandler = void Function(dynamic res, Exception? error);
 
 // 握手完成通知.
 typedef WSControllerOnHandshake = void Function();
 // 广播接收通知.
 typedef WSControllerOnBroadcast = void Function();
+// 接收到消息通用.
+typedef WSControllerOnMessage = void Function(Uint8List message);
 // 断开连接通知.
 typedef WSControllerOnDisconnect = void Function();
 
@@ -55,69 +57,17 @@ class WSClient {
 
     _map = {
       // 接收握手信息.
-      pkgTypeHandshake: (WSPackage pkg) {
-        WSUtil.debug('Successfully saved handshake data.', tag: 'Handshake');
-        if (pkg.body != null) {
-          final result = WSUtil.strDecode(pkg.body!, isCompress: _compress);
-          final data = json.decode(result);
-          _dict = data['sys']['dict'].cast<String, int>();
-          _serializer = data['sys']['serializer'] as String;
-        }
-        // 发送已确认信息.
-        final package = WSPackage.handshakeACKPackage();
-        _sendWithPackage(package);
-        // 开启定时心跳, 防止被踢.
-        _heartbeatTimer = Timer.periodic(Duration(seconds: _heartbeat), (timer) {
-          _sendWithPackage(WSPackage.heartbeatPackage());
-        });
-        // 通知握手完成.
-        onHandshake?.call();
-      },
-      pkgTypeHeartbeat: (WSPackage pkg) {
-        WSUtil.debug('Server heartbeat.', tag: 'Heartbeat');
-      },
-      pkgTypeData: (WSPackage pkg) {
-        final msg = WSMessage.decode(pkg.body!, enabledEncodeString: false);
-        dynamic payload;
-        Exception? err;
-
-        if (_serializer == 'json') {
-          try {
-            final jStr = utf8.decode(msg.msg!);
-            payload = json.decode(jStr);
-          } catch (ex) {
-            err = ex as Exception;
-          }
-        } else if (_serializer == 'protobuf') {
-          payload = msg.msg;
-        } else {
-          WSUtil.debug('Unknown serialization', tag: 'Parse');
-        }
-
-        if (!_reqCached.containsKey(msg.id)) {
-          return;
-        }
-        final task = _reqCached[msg.id];
-        _reqCached.remove(msg.id);
-
-        if (task!.callback != null) {
-          task.callback!.call(payload, err);
-        }
-        if (task.completer != null) {
-          if (err != null) {
-            task.completer?.completeError(err);
-          } else {
-            task.completer?.complete(payload);
-          }
-        }
-      },
-      pkgTypeKick: (WSPackage pkg) {},
+      pkgTypeHandshake: _onHandshakeHandler,
+      pkgTypeHeartbeat: _onHeartbeatHandler,
+      pkgTypeData: _onDataHandler,
+      pkgTypeKick: _onKickHandler,
     };
   }
 
   WSControllerOnHandshake? onHandshake;
   WSControllerOnBroadcast? onBroadcast;
   WSControllerOnDisconnect? onDisconnect;
+  WSControllerOnMessage? onMessage;
 
   // 握手信息.
   final dynamic handshakeData;
@@ -144,7 +94,7 @@ class WSClient {
   Timer? _heartbeatTimer;
 
   // 请求保存列表,用于回调处理.
-  final _reqCached = <int, WSTask>{};
+  final _reqCached = <int, WSCallbackObject>{};
 
   // 请求ID.
   int _reqId = 0;
@@ -185,7 +135,8 @@ class WSClient {
     }
   }
 
-  void request(String route, {Uint8List? data, WSRequestCallback? callback}) {
+  // RPC请求.
+  void request(String route, {Uint8List? data, WSRequestHandler? callback}) {
     final isCompressRoute = _compressRoute && _dict.containsKey(route);
 
     final msg = WSMessage(
@@ -199,11 +150,12 @@ class WSClient {
     final bytes = msg.encode();
     final package = WSPackage(pkgTypeData, body: bytes);
 
-    _reqCached[msg.id] = WSTask(callback: callback);
+    _reqCached[msg.id] = WSCallbackObject(callback: callback);
 
     _sendWithPackage(package);
   }
 
+  // 异步执行的RPC请求.
   Future<dynamic> requestAsync(String route, {Uint8List? data}) {
     final isCompressRoute = _compressRoute && _dict.containsKey(route);
 
@@ -220,7 +172,7 @@ class WSClient {
     final completer = Completer<dynamic>();
 
     _sendWithPackage(package);
-    _reqCached[msg.id] = WSTask(completer: completer);
+    _reqCached[msg.id] = WSCallbackObject(completer: completer);
     return completer.future;
   }
 
@@ -246,6 +198,75 @@ class WSClient {
       }
     }
   }
+
+  void _onHandshakeHandler(WSPackage pkg) {
+    WSUtil.debug('Successfully saved handshake data.', tag: 'Handshake');
+    if (pkg.body != null) {
+      final result = WSUtil.strDecode(pkg.body!, isCompress: _compress);
+      final data = json.decode(result);
+      _dict = data['sys']['dict'].cast<String, int>();
+      _serializer = data['sys']['serializer'] as String;
+    }
+    // 发送已确认信息.
+    final package = WSPackage.handshakeACKPackage();
+    _sendWithPackage(package);
+    // 开启定时心跳, 防止被踢.
+    _heartbeatTimer = Timer.periodic(Duration(seconds: _heartbeat), (timer) {
+      _sendWithPackage(WSPackage.heartbeatPackage());
+    });
+    // 通知握手完成.
+    onHandshake?.call();
+  }
+
+  void _onHeartbeatHandler(WSPackage _) {
+    WSUtil.debug('Server heartbeat.', tag: 'Heartbeat');
+  }
+
+  void _onDataHandler(WSPackage pkg) {
+    final msg = WSMessage.decode(pkg.body!, enabledEncodeString: false);
+    dynamic payload;
+    Exception? err;
+
+    if (_serializer == 'json') {
+      try {
+        final jStr = utf8.decode(msg.msg!);
+        payload = json.decode(jStr);
+      } catch (ex) {
+        err = ex as Exception;
+      }
+    } else if (_serializer == 'protobuf') {
+      payload = msg.msg;
+    } else {
+      WSUtil.debug('Unknown serialization', tag: 'Parse');
+    }
+
+    WSUtil.debug(msg.toString(), tag: 'ReceiveMessage');
+
+    if (msg.type == msgTypeResponse) {
+      if (!_reqCached.containsKey(msg.id)) {
+        return;
+      }
+      final task = _reqCached[msg.id];
+      _reqCached.remove(msg.id);
+
+      if (task!.callback != null) {
+        task.callback!.call(payload, err);
+      }
+      if (task.completer != null) {
+        if (err != null) {
+          task.completer?.completeError(err);
+        } else {
+          task.completer?.complete(payload);
+        }
+      }
+    } else if (msg.type == msgTypePush) {
+      if (msg.route == 'game.chat.onmessage') {
+        onMessage?.call(msg.msg!);
+      }
+    }
+  }
+
+  void _onKickHandler(WSPackage _) {}
 
   void _onErrorHandler(e) {
     WSUtil.debug('Socket exception:$e');
@@ -336,6 +357,9 @@ class WSPackage {
       length = ((bytes[offset++]) << 16 | (bytes[offset++]) << 8 | bytes[offset++]) >>> 0;
       final body = length > 0 ? bytes.sublist(offset, offset + length) : null;
       offset += length;
+      if (body != null && body!.length < length) {
+        debugPrint('lllllllllll 0>>>>');
+      }
       pkgs.add(WSPackage(type, body: body));
     }
     return pkgs;
@@ -562,9 +586,13 @@ class WSMessage {
   }
 }
 
-class WSTask {
-  WSTask({this.completer, this.callback});
+// RPC回调信息.
+class WSCallbackObject {
+  WSCallbackObject({this.completer, this.callback});
 
+  // 处理异步请求.
   Completer<dynamic>? completer;
-  WSRequestCallback? callback;
+
+  // 处理回调方法.
+  WSRequestHandler? callback;
 }

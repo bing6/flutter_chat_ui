@@ -54,22 +54,26 @@ message RPCRobotListRes {
   repeated RobotData Items = 2;
 }
 
-// 请求与机器人聊天
-message RPCRobotMessageReq {
-  string CID = 1;
-  int64 From = 2;
-  int64 To = 3;
-  string Content = 4;
-}
-
-
-message REQChatMessage {
+// 请求聊天
+message RPCChatMessageReq {
   string Id = 1;
   int64 From = 2;
   int64 To = 3;
-  string Content = 4;
+  string ContentData = 4;
+  int32  ContentType = 5;
 }
 
-message RESChatMessage {
+// 返回聊天请求结果
+message RPCChatMessageRes {
   State State = 1;
+}
+
+// 通知客户端接收机器人聊天信息
+message NotifyChatMessage {
+  string Id = 1;
+  string reply = 2;
+  int64 From = 3;
+  int64 To = 4;
+  string ContentData = 5;
+  int32  ContentType = 6;
 }

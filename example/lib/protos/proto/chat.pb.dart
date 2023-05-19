@@ -396,110 +396,23 @@ class RPCRobotListRes extends $pb.GeneratedMessage {
   $core.List<RobotData> get items => $_getList(1);
 }
 
-class RPCRobotMessageReq extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RPCRobotMessageReq', createEmptyInstance: create)
-    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'CID', protoName: 'CID')
-    ..aInt64(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'From', protoName: 'From')
-    ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'To', protoName: 'To')
-    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Content', protoName: 'Content')
-    ..hasRequiredFields = false
-  ;
-
-  RPCRobotMessageReq._() : super();
-  factory RPCRobotMessageReq({
-    $core.String? cID,
-    $fixnum.Int64? from,
-    $fixnum.Int64? to,
-    $core.String? content,
-  }) {
-    final _result = create();
-    if (cID != null) {
-      _result.cID = cID;
-    }
-    if (from != null) {
-      _result.from = from;
-    }
-    if (to != null) {
-      _result.to = to;
-    }
-    if (content != null) {
-      _result.content = content;
-    }
-    return _result;
-  }
-  factory RPCRobotMessageReq.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RPCRobotMessageReq.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  RPCRobotMessageReq clone() => RPCRobotMessageReq()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  RPCRobotMessageReq copyWith(void Function(RPCRobotMessageReq) updates) => super.copyWith((message) => updates(message as RPCRobotMessageReq)) as RPCRobotMessageReq; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static RPCRobotMessageReq create() => RPCRobotMessageReq._();
-  RPCRobotMessageReq createEmptyInstance() => create();
-  static $pb.PbList<RPCRobotMessageReq> createRepeated() => $pb.PbList<RPCRobotMessageReq>();
-  @$core.pragma('dart2js:noInline')
-  static RPCRobotMessageReq getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RPCRobotMessageReq>(create);
-  static RPCRobotMessageReq? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get cID => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set cID($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasCID() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearCID() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $fixnum.Int64 get from => $_getI64(1);
-  @$pb.TagNumber(2)
-  set from($fixnum.Int64 v) { $_setInt64(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasFrom() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearFrom() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $fixnum.Int64 get to => $_getI64(2);
-  @$pb.TagNumber(3)
-  set to($fixnum.Int64 v) { $_setInt64(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasTo() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearTo() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.String get content => $_getSZ(3);
-  @$pb.TagNumber(4)
-  set content($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasContent() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearContent() => clearField(4);
-}
-
-class REQChatMessage extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'REQChatMessage', createEmptyInstance: create)
+class RPCChatMessageReq extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RPCChatMessageReq', createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Id', protoName: 'Id')
     ..aInt64(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'From', protoName: 'From')
     ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'To', protoName: 'To')
-    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Content', protoName: 'Content')
+    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ContentData', protoName: 'ContentData')
+    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ContentType', $pb.PbFieldType.O3, protoName: 'ContentType')
     ..hasRequiredFields = false
   ;
 
-  REQChatMessage._() : super();
-  factory REQChatMessage({
+  RPCChatMessageReq._() : super();
+  factory RPCChatMessageReq({
     $core.String? id,
     $fixnum.Int64? from,
     $fixnum.Int64? to,
-    $core.String? content,
+    $core.String? contentData,
+    $core.int? contentType,
   }) {
     final _result = create();
     if (id != null) {
@@ -511,31 +424,34 @@ class REQChatMessage extends $pb.GeneratedMessage {
     if (to != null) {
       _result.to = to;
     }
-    if (content != null) {
-      _result.content = content;
+    if (contentData != null) {
+      _result.contentData = contentData;
+    }
+    if (contentType != null) {
+      _result.contentType = contentType;
     }
     return _result;
   }
-  factory REQChatMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory REQChatMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  factory RPCChatMessageReq.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RPCChatMessageReq.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  REQChatMessage clone() => REQChatMessage()..mergeFromMessage(this);
+  RPCChatMessageReq clone() => RPCChatMessageReq()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  REQChatMessage copyWith(void Function(REQChatMessage) updates) => super.copyWith((message) => updates(message as REQChatMessage)) as REQChatMessage; // ignore: deprecated_member_use
+  RPCChatMessageReq copyWith(void Function(RPCChatMessageReq) updates) => super.copyWith((message) => updates(message as RPCChatMessageReq)) as RPCChatMessageReq; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static REQChatMessage create() => REQChatMessage._();
-  REQChatMessage createEmptyInstance() => create();
-  static $pb.PbList<REQChatMessage> createRepeated() => $pb.PbList<REQChatMessage>();
+  static RPCChatMessageReq create() => RPCChatMessageReq._();
+  RPCChatMessageReq createEmptyInstance() => create();
+  static $pb.PbList<RPCChatMessageReq> createRepeated() => $pb.PbList<RPCChatMessageReq>();
   @$core.pragma('dart2js:noInline')
-  static REQChatMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<REQChatMessage>(create);
-  static REQChatMessage? _defaultInstance;
+  static RPCChatMessageReq getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RPCChatMessageReq>(create);
+  static RPCChatMessageReq? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get id => $_getSZ(0);
@@ -565,23 +481,32 @@ class REQChatMessage extends $pb.GeneratedMessage {
   void clearTo() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.String get content => $_getSZ(3);
+  $core.String get contentData => $_getSZ(3);
   @$pb.TagNumber(4)
-  set content($core.String v) { $_setString(3, v); }
+  set contentData($core.String v) { $_setString(3, v); }
   @$pb.TagNumber(4)
-  $core.bool hasContent() => $_has(3);
+  $core.bool hasContentData() => $_has(3);
   @$pb.TagNumber(4)
-  void clearContent() => clearField(4);
+  void clearContentData() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.int get contentType => $_getIZ(4);
+  @$pb.TagNumber(5)
+  set contentType($core.int v) { $_setSignedInt32(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasContentType() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearContentType() => clearField(5);
 }
 
-class RESChatMessage extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RESChatMessage', createEmptyInstance: create)
+class RPCChatMessageRes extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RPCChatMessageRes', createEmptyInstance: create)
     ..aOM<$0.State>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'State', protoName: 'State', subBuilder: $0.State.create)
     ..hasRequiredFields = false
   ;
 
-  RESChatMessage._() : super();
-  factory RESChatMessage({
+  RPCChatMessageRes._() : super();
+  factory RPCChatMessageRes({
     $0.State? state,
   }) {
     final _result = create();
@@ -590,26 +515,26 @@ class RESChatMessage extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory RESChatMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RESChatMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  factory RPCChatMessageRes.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RPCChatMessageRes.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  RESChatMessage clone() => RESChatMessage()..mergeFromMessage(this);
+  RPCChatMessageRes clone() => RPCChatMessageRes()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  RESChatMessage copyWith(void Function(RESChatMessage) updates) => super.copyWith((message) => updates(message as RESChatMessage)) as RESChatMessage; // ignore: deprecated_member_use
+  RPCChatMessageRes copyWith(void Function(RPCChatMessageRes) updates) => super.copyWith((message) => updates(message as RPCChatMessageRes)) as RPCChatMessageRes; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static RESChatMessage create() => RESChatMessage._();
-  RESChatMessage createEmptyInstance() => create();
-  static $pb.PbList<RESChatMessage> createRepeated() => $pb.PbList<RESChatMessage>();
+  static RPCChatMessageRes create() => RPCChatMessageRes._();
+  RPCChatMessageRes createEmptyInstance() => create();
+  static $pb.PbList<RPCChatMessageRes> createRepeated() => $pb.PbList<RPCChatMessageRes>();
   @$core.pragma('dart2js:noInline')
-  static RESChatMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RESChatMessage>(create);
-  static RESChatMessage? _defaultInstance;
+  static RPCChatMessageRes getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RPCChatMessageRes>(create);
+  static RPCChatMessageRes? _defaultInstance;
 
   @$pb.TagNumber(1)
   $0.State get state => $_getN(0);
@@ -621,5 +546,122 @@ class RESChatMessage extends $pb.GeneratedMessage {
   void clearState() => clearField(1);
   @$pb.TagNumber(1)
   $0.State ensureState() => $_ensure(0);
+}
+
+class NotifyChatMessage extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NotifyChatMessage', createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Id', protoName: 'Id')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reply')
+    ..aInt64(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'From', protoName: 'From')
+    ..aInt64(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'To', protoName: 'To')
+    ..aOS(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ContentData', protoName: 'ContentData')
+    ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ContentType', $pb.PbFieldType.O3, protoName: 'ContentType')
+    ..hasRequiredFields = false
+  ;
+
+  NotifyChatMessage._() : super();
+  factory NotifyChatMessage({
+    $core.String? id,
+    $core.String? reply,
+    $fixnum.Int64? from,
+    $fixnum.Int64? to,
+    $core.String? contentData,
+    $core.int? contentType,
+  }) {
+    final _result = create();
+    if (id != null) {
+      _result.id = id;
+    }
+    if (reply != null) {
+      _result.reply = reply;
+    }
+    if (from != null) {
+      _result.from = from;
+    }
+    if (to != null) {
+      _result.to = to;
+    }
+    if (contentData != null) {
+      _result.contentData = contentData;
+    }
+    if (contentType != null) {
+      _result.contentType = contentType;
+    }
+    return _result;
+  }
+  factory NotifyChatMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NotifyChatMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NotifyChatMessage clone() => NotifyChatMessage()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NotifyChatMessage copyWith(void Function(NotifyChatMessage) updates) => super.copyWith((message) => updates(message as NotifyChatMessage)) as NotifyChatMessage; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NotifyChatMessage create() => NotifyChatMessage._();
+  NotifyChatMessage createEmptyInstance() => create();
+  static $pb.PbList<NotifyChatMessage> createRepeated() => $pb.PbList<NotifyChatMessage>();
+  @$core.pragma('dart2js:noInline')
+  static NotifyChatMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NotifyChatMessage>(create);
+  static NotifyChatMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get id => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set id($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get reply => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set reply($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasReply() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearReply() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $fixnum.Int64 get from => $_getI64(2);
+  @$pb.TagNumber(3)
+  set from($fixnum.Int64 v) { $_setInt64(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasFrom() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearFrom() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $fixnum.Int64 get to => $_getI64(3);
+  @$pb.TagNumber(4)
+  set to($fixnum.Int64 v) { $_setInt64(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasTo() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearTo() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get contentData => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set contentData($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasContentData() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearContentData() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.int get contentType => $_getIZ(5);
+  @$pb.TagNumber(6)
+  set contentType($core.int v) { $_setSignedInt32(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasContentType() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearContentType() => clearField(6);
 }
 

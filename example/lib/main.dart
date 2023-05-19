@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'package:example/protos/proto/chat.pb.dart';
+import 'package:fixnum/fixnum.dart' as fnum;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,10 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'protos/proto/common.pb.dart' as pb;
+import 'protos/proto/passprot.pb.dart' as passport;
+import 'protos/proto/chat.pb.dart' as chat;
+
+// import 'protos/proto/Notif';
 import 'wsclient/ws.dart';
 
 void main() {
@@ -37,16 +44,8 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-// Handshake represents a handshake: request(client) <====> handshake response(server).
-const int pHandshake = 0x01;
-// HandshakeAck represents a handshake ack from client to server.
-const int pHandshakeAck = 0x02;
-// Heartbeat represents a heartbeat.
-const int pHeartbeat = 0x03;
-// Data represents a common data packet.
-const int pData = 0x04;
-// Kick represents a kick off packet.
-const int pKick = 0x05;
+const String userToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNTc1NzYwNjIzNzAyMDE2MDAiLCJzdWIiOjUwMDAsImV4cCI6MTY4NjczNDM3NiwiaXNzIjoiMzQyNjE1MjYzNjAwMDU0MjcyIiwicmVzIjoyMDAwMDIsInNwYSI6MTc0LCJpc19hZG1pbiI6MCwiaWF0IjoxNjg0MTQyMzc2fQ.GF5WCN1GEpK6fhDgXDZtpC1eLKmuhQB0ADf1pajzRb0';
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
@@ -55,6 +54,9 @@ class _ChatPageState extends State<ChatPage> {
   );
 
   late WSClient _client;
+
+  types.User? _ownerUser;
+  types.User? _robotUser;
 
   // Disconnect message from server.
 
@@ -74,14 +76,75 @@ class _ChatPageState extends State<ChatPage> {
     };
 
     _client = WSClient(handshakeData, debug: true);
-    _client.onHandshake = () {
-      debugPrint('连接完成啦...可以发消息啦');
-      Timer.periodic(const Duration(seconds: 5), (timer) async {
-        final res = await _client.ping();
-        // print(res);
-        final s = pb.Pong.fromBuffer(res);
-        print(s);
+    _client.onMessage = (message) {
+      final rece = NotifyChatMessage.fromBuffer(message);
+      final textMessage = types.TextMessage(
+        author: _robotUser!,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: rece.id,
+        text: rece.contentData,
+      );
+
+      _addMessage(textMessage);
+    };
+    _client.onHandshake = () async {
+      // Timer.periodic(const Duration(seconds: 5), (timer) async {
+      //   final res = await _client.ping();
+      //   // print(res);
+      //   final s = pb.Pong.fromBuffer(res);
+      //   print(s);
+      // });
+
+      // *** 握手完成后需要立即请求鉴权, 否则多数请求将无法使用
+      final r = await _client.auth(passport.RPCAuthenticationReq(token: userToken));
+      if (r.state.code != 200) {
+        WSUtil.debug('出错啦! -> ${r.state.msg}', tag: 'Test');
+        return;
+      }
+
+      WSUtil.debug('授权成功!', tag: 'Test');
+      WSUtil.debug('UserID:${r.userId}', tag: 'Test');
+
+      setState(() {
+        _ownerUser = types.User(
+          id: r.userId.toString(),
+          lastName: '小明',
+        );
       });
+
+      final robots = await _client.robots();
+      if (robots.state.code != 200) {
+        WSUtil.debug(robots.state.msg, tag: 'Test');
+        return;
+      }
+
+      WSUtil.debug('当前用户拥有${robots.items.length}个机器人', tag: 'Test');
+      if (robots.items.isNotEmpty) {
+        _robotUser = types.User(
+          id: robots.items.first.iD.toString(),
+          lastName: robots.items.first.name,
+        );
+        WSUtil.debug('机器人创建成功, 可以开始聊天啦!', tag: 'Test');
+        WSUtil.debug('名称:${robots.items.first.name}', tag: 'Test');
+        return;
+      }
+
+      final robot = await _client.newRobot(chat.RPCNewRobotReq(
+        name: '小甜甜',
+        gender: 0,
+        series: 1,
+        tags: '制服,大波,碧眼,白发',
+      ));
+      if (robot.state.code == 200) {
+        _robotUser = types.User(
+          id: robot.data.iD.toString(),
+          lastName: robot.data.name,
+        );
+        WSUtil.debug('机器人创建成功, 可以开始聊天啦!', tag: 'Test');
+        WSUtil.debug('名称:${robot.data.name}', tag: 'Test');
+      } else {
+        WSUtil.debug(robots.state.msg, tag: 'Test');
+      }
     };
     _client.onBroadcast = () {};
     _client.onDisconnect = () {
@@ -103,7 +166,7 @@ class _ChatPageState extends State<ChatPage> {
           onSendPressed: _handleSendPressed,
           showUserAvatars: true,
           showUserNames: true,
-          user: _user,
+          user: _ownerUser ?? _user,
           showCurrentUserAvatar: true,
         ),
       );
@@ -259,12 +322,24 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
+    if (_ownerUser == null) {
+      WSUtil.debug('用户没有登入哦', tag: 'Test');
+      return;
+    }
     final textMessage = types.TextMessage(
-      author: _user,
+      author: _ownerUser!,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: const Uuid().v4(),
       text: message.text,
     );
+
+    _client.sendMessage(chat.RPCChatMessageReq(
+      id: textMessage.id,
+      from: fnum.Int64(int.parse(_ownerUser!.id)),
+      to: fnum.Int64(int.parse(_robotUser!.id)),
+      contentData: textMessage.text,
+      contentType: 1,
+    ));
 
     _addMessage(textMessage);
   }

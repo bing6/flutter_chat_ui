@@ -62,39 +62,42 @@ const RPCRobotListRes$json = const {
 
 /// Descriptor for `RPCRobotListRes`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List rPCRobotListResDescriptor = $convert.base64Decode('Cg9SUENSb2JvdExpc3RSZXMSHAoFU3RhdGUYASABKAsyBi5TdGF0ZVIFU3RhdGUSIAoFSXRlbXMYAiADKAsyCi5Sb2JvdERhdGFSBUl0ZW1z');
-@$core.Deprecated('Use rPCRobotMessageReqDescriptor instead')
-const RPCRobotMessageReq$json = const {
-  '1': 'RPCRobotMessageReq',
-  '2': const [
-    const {'1': 'CID', '3': 1, '4': 1, '5': 9, '10': 'CID'},
-    const {'1': 'From', '3': 2, '4': 1, '5': 3, '10': 'From'},
-    const {'1': 'To', '3': 3, '4': 1, '5': 3, '10': 'To'},
-    const {'1': 'Content', '3': 4, '4': 1, '5': 9, '10': 'Content'},
-  ],
-};
-
-/// Descriptor for `RPCRobotMessageReq`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List rPCRobotMessageReqDescriptor = $convert.base64Decode('ChJSUENSb2JvdE1lc3NhZ2VSZXESEAoDQ0lEGAEgASgJUgNDSUQSEgoERnJvbRgCIAEoA1IERnJvbRIOCgJUbxgDIAEoA1ICVG8SGAoHQ29udGVudBgEIAEoCVIHQ29udGVudA==');
-@$core.Deprecated('Use rEQChatMessageDescriptor instead')
-const REQChatMessage$json = const {
-  '1': 'REQChatMessage',
+@$core.Deprecated('Use rPCChatMessageReqDescriptor instead')
+const RPCChatMessageReq$json = const {
+  '1': 'RPCChatMessageReq',
   '2': const [
     const {'1': 'Id', '3': 1, '4': 1, '5': 9, '10': 'Id'},
     const {'1': 'From', '3': 2, '4': 1, '5': 3, '10': 'From'},
     const {'1': 'To', '3': 3, '4': 1, '5': 3, '10': 'To'},
-    const {'1': 'Content', '3': 4, '4': 1, '5': 9, '10': 'Content'},
+    const {'1': 'ContentData', '3': 4, '4': 1, '5': 9, '10': 'ContentData'},
+    const {'1': 'ContentType', '3': 5, '4': 1, '5': 5, '10': 'ContentType'},
   ],
 };
 
-/// Descriptor for `REQChatMessage`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List rEQChatMessageDescriptor = $convert.base64Decode('Cg5SRVFDaGF0TWVzc2FnZRIOCgJJZBgBIAEoCVICSWQSEgoERnJvbRgCIAEoA1IERnJvbRIOCgJUbxgDIAEoA1ICVG8SGAoHQ29udGVudBgEIAEoCVIHQ29udGVudA==');
-@$core.Deprecated('Use rESChatMessageDescriptor instead')
-const RESChatMessage$json = const {
-  '1': 'RESChatMessage',
+/// Descriptor for `RPCChatMessageReq`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List rPCChatMessageReqDescriptor = $convert.base64Decode('ChFSUENDaGF0TWVzc2FnZVJlcRIOCgJJZBgBIAEoCVICSWQSEgoERnJvbRgCIAEoA1IERnJvbRIOCgJUbxgDIAEoA1ICVG8SIAoLQ29udGVudERhdGEYBCABKAlSC0NvbnRlbnREYXRhEiAKC0NvbnRlbnRUeXBlGAUgASgFUgtDb250ZW50VHlwZQ==');
+@$core.Deprecated('Use rPCChatMessageResDescriptor instead')
+const RPCChatMessageRes$json = const {
+  '1': 'RPCChatMessageRes',
   '2': const [
     const {'1': 'State', '3': 1, '4': 1, '5': 11, '6': '.State', '10': 'State'},
   ],
 };
 
-/// Descriptor for `RESChatMessage`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List rESChatMessageDescriptor = $convert.base64Decode('Cg5SRVNDaGF0TWVzc2FnZRIcCgVTdGF0ZRgBIAEoCzIGLlN0YXRlUgVTdGF0ZQ==');
+/// Descriptor for `RPCChatMessageRes`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List rPCChatMessageResDescriptor = $convert.base64Decode('ChFSUENDaGF0TWVzc2FnZVJlcxIcCgVTdGF0ZRgBIAEoCzIGLlN0YXRlUgVTdGF0ZQ==');
+@$core.Deprecated('Use notifyChatMessageDescriptor instead')
+const NotifyChatMessage$json = const {
+  '1': 'NotifyChatMessage',
+  '2': const [
+    const {'1': 'Id', '3': 1, '4': 1, '5': 9, '10': 'Id'},
+    const {'1': 'reply', '3': 2, '4': 1, '5': 9, '10': 'reply'},
+    const {'1': 'From', '3': 3, '4': 1, '5': 3, '10': 'From'},
+    const {'1': 'To', '3': 4, '4': 1, '5': 3, '10': 'To'},
+    const {'1': 'ContentData', '3': 5, '4': 1, '5': 9, '10': 'ContentData'},
+    const {'1': 'ContentType', '3': 6, '4': 1, '5': 5, '10': 'ContentType'},
+  ],
+};
+
+/// Descriptor for `NotifyChatMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List notifyChatMessageDescriptor = $convert.base64Decode('ChFOb3RpZnlDaGF0TWVzc2FnZRIOCgJJZBgBIAEoCVICSWQSFAoFcmVwbHkYAiABKAlSBXJlcGx5EhIKBEZyb20YAyABKANSBEZyb20SDgoCVG8YBCABKANSAlRvEiAKC0NvbnRlbnREYXRhGAUgASgJUgtDb250ZW50RGF0YRIgCgtDb250ZW50VHlwZRgGIAEoBVILQ29udGVudFR5cGU=');
