@@ -14,7 +14,8 @@ import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'wsclient.dart';
+import 'protos/proto/common.pb.dart' as pb;
+import 'wsclient/ws.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(const MyApp()));
@@ -75,8 +76,11 @@ class _ChatPageState extends State<ChatPage> {
     _client = WSClient(handshakeData, debug: true);
     _client.onHandshake = () {
       debugPrint('连接完成啦...可以发消息啦');
-      Timer.periodic(const Duration(seconds: 5), (timer) {
-        _client.ping();
+      Timer.periodic(const Duration(seconds: 5), (timer) async {
+        final res = await _client.ping();
+        // print(res);
+        final s = pb.Pong.fromBuffer(res);
+        print(s);
       });
     };
     _client.onBroadcast = () {};
@@ -88,58 +92,6 @@ class _ChatPageState extends State<ChatPage> {
     return;
     // _loadMessages();.
   }
-
-  //
-  // /**
-  //  *
-  //  *
-  //  * Protocol.strdecode = function(buffer) {
-  //     var bytes = new ByteArray(buffer);
-  //     var array = [];
-  //     var offset = 0;
-  //     var charCode = 0;
-  //     var end = bytes.length;
-  //     while(offset < end){
-  //     if(bytes[offset] < 128){
-  //     charCode = bytes[offset];
-  //     offset += 1;
-  //     }else if(bytes[offset] < 224){
-  //     charCode = ((bytes[offset] & 0x3f)<<6) + (bytes[offset+1] & 0x3f);
-  //     offset += 2;
-  //     }else{
-  //     charCode = ((bytes[offset] & 0x0f)<<12) + ((bytes[offset+1] & 0x3f)<<6) + (bytes[offset+2] & 0x3f);
-  //     offset += 3;
-  //     }
-  //     array.push(charCode);
-  //     }
-  //     return String.fromCharCode.apply(null, array);
-  //     };
-  //  */
-  // String strdecode(Uint8List buffer) {
-  //   var charCode = 0;
-  //   var offset = 0;
-  //   var end = buffer.length;
-  //   var arr = List<int>.empty(growable: true);
-  //
-  //   while (offset < end) {
-  //     if (buffer[offset] < 128) {
-  //       charCode = buffer[offset];
-  //       offset += 1;
-  //     } else if (buffer[offset] < 244) {
-  //       charCode = ((buffer[offset] & 0x3f) << 6) + (buffer[offset + 1] & 0x3f);
-  //       offset += 2;
-  //     } else {
-  //       charCode = ((buffer[offset] & 0x0f) << 12) + ((buffer[offset + 1] & 0x3f) << 6) + (buffer[offset + 2] & 0x3f);
-  //       offset += 3;
-  //     }
-  //
-  //     arr.add(charCode);
-  //   }
-  //
-  //   print('SSSS -> ${arr}');
-  //
-  //   return String.fromCharCodes(arr);
-  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(

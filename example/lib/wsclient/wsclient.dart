@@ -8,8 +8,6 @@ import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'protos/proto/common.pb.dart';
-
 // 包类型.
 const int pkgTypeHandshake = 0x01;
 const int pkgTypeHandshakeAck = 0x02;
@@ -33,9 +31,14 @@ const msgCompressRouteMask = 0x1;
 
 const msgTypeMask = 0x7;
 
+// RPC请求回调. 序列化方式为Json时，返回Map, 为protoc时返回UInt8List.
+typedef WSRequestCallback = void Function(dynamic res, Exception? error);
+
 // 握手完成通知.
 typedef WSControllerOnHandshake = void Function();
+// 广播接收通知.
 typedef WSControllerOnBroadcast = void Function();
+// 断开连接通知.
 typedef WSControllerOnDisconnect = void Function();
 
 class WSClient {
@@ -48,37 +51,65 @@ class WSClient {
     this.onBroadcast,
   }) {
     _compressRoute = compressRoute;
-    isDebug = debug;
+    WSUtil.enabledPrintDebug = debug;
 
     _map = {
+      // 接收握手信息.
       pkgTypeHandshake: (WSPackage pkg) {
-        _debug('握手完成.', tag: 'Handshake');
-        if (pkg.body == null) {
-          final result = WSProtocol.strDecode(pkg.body!, isCompress: _compress);
+        WSUtil.debug('Successfully saved handshake data.', tag: 'Handshake');
+        if (pkg.body != null) {
+          final result = WSUtil.strDecode(pkg.body!, isCompress: _compress);
           final data = json.decode(result);
           _dict = data['sys']['dict'].cast<String, int>();
+          _serializer = data['sys']['serializer'] as String;
         }
         // 发送已确认信息.
         final package = WSPackage.handshakeACKPackage();
-        sendWithPackage(package);
+        _sendWithPackage(package);
         // 开启定时心跳, 防止被踢.
         _heartbeatTimer = Timer.periodic(Duration(seconds: _heartbeat), (timer) {
-          sendWithPackage(WSPackage.heartbeatPackage());
+          _sendWithPackage(WSPackage.heartbeatPackage());
         });
         // 通知握手完成.
         onHandshake?.call();
       },
       pkgTypeHeartbeat: (WSPackage pkg) {
-        _debug('服务端发送了心跳数据.', tag: 'Heartbeat');
+        WSUtil.debug('Server heartbeat.', tag: 'Heartbeat');
       },
       pkgTypeData: (WSPackage pkg) {
         final msg = WSMessage.decode(pkg.body!, enabledEncodeString: false);
-        final jsonstr = utf8.decode(msg.msg!);
-        // json.decode(jsonstr);
-        _debug(msg, tag: 'Data');
-        // final body = Pong.fromBuffer(msg.msg!);
-        _debug(jsonstr, tag: 'Data');
-        // _debug(json.decode(jsonstr), tag: 'Data');
+        dynamic payload;
+        Exception? err;
+
+        if (_serializer == 'json') {
+          try {
+            final jStr = utf8.decode(msg.msg!);
+            payload = json.decode(jStr);
+          } catch (ex) {
+            err = ex as Exception;
+          }
+        } else if (_serializer == 'protobuf') {
+          payload = msg.msg;
+        } else {
+          WSUtil.debug('Unknown serialization', tag: 'Parse');
+        }
+
+        if (!_reqCached.containsKey(msg.id)) {
+          return;
+        }
+        final task = _reqCached[msg.id];
+        _reqCached.remove(msg.id);
+
+        if (task!.callback != null) {
+          task.callback!.call(payload, err);
+        }
+        if (task.completer != null) {
+          if (err != null) {
+            task.completer?.completeError(err);
+          } else {
+            task.completer?.complete(payload);
+          }
+        }
       },
       pkgTypeKick: (WSPackage pkg) {},
     };
@@ -88,14 +119,11 @@ class WSClient {
   WSControllerOnBroadcast? onBroadcast;
   WSControllerOnDisconnect? onDisconnect;
 
+  // 握手信息.
   final dynamic handshakeData;
 
-  late bool isDebug;
-
+  // Socket连接.
   WebSocketChannel? _channel;
-
-  // 连接地址.
-  Uri? _uri;
 
   // 是否启用字符串压缩.
   final bool _compress = true;
@@ -106,34 +134,49 @@ class WSClient {
   // 回调对应处理方法.
   late Map<int, Function(WSPackage)> _map;
 
-  late Map<String, int> _dict; // 握手后拿到的压缩路由列表.
-  final int _heartbeat = 10; // 心跳时间间隔.
-  Timer? _heartbeatTimer; // 心跳.
-  final _reqCached = <int, Completer<dynamic>>{}; // 请求保存列表,用于回调处理.
-  int _reqId = 0; // 请求ID，用来匹配回调.
-  bool _compressRoute = false; // 是否启用压缩路由
+  // 握手后拿到的压缩路由列表.
+  late Map<String, int> _dict;
+
+  // 心跳时间间隔.
+  final int _heartbeat = 10;
+
+  // 心跳.
+  Timer? _heartbeatTimer;
+
+  // 请求保存列表,用于回调处理.
+  final _reqCached = <int, WSTask>{};
+
+  // 请求ID.
+  int _reqId = 0;
+
+  // 是否启用压缩路由.
+  bool _compressRoute = false;
+
+  // 通讯返回数据的序列化方式.
+  String _serializer = 'json';
 
   // 是否连接中.
   bool connected() => _connected;
 
   // 连接服务器.
-  void connect(Uri uri) {
-    _uri = uri;
+  bool connect(Uri uri) {
     try {
-      _channel = WebSocketChannel.connect(_uri!);
+      _channel = WebSocketChannel.connect(uri);
       _channel!.stream.listen(
         _onReceiveHandler,
         onError: _onErrorHandler,
         onDone: _onDoneHandler,
       );
       _connected = true;
-
-      // 发送握手请求.
-      final package = WSPackage.handshakePackage(handshakeData);
-      sendWithPackage(package, debug: true);
     } catch (e) {
       debugPrint('Connection exception:$e');
+      return false;
     }
+
+    // 发送握手请求.
+    final package = WSPackage.handshakePackage(handshakeData);
+    _sendWithPackage(package, debug: true);
+    return true;
   }
 
   void disconect() {
@@ -142,19 +185,7 @@ class WSClient {
     }
   }
 
-  void sendWithPackage(WSPackage package, {bool debug = false}) {
-    if (!_connected) return;
-    _debug(package.toString(), tag: 'SendPackage', debug: debug);
-    _channel?.sink.add(package.encode());
-  }
-
-  void send(Uint8List data, {bool debug = false}) {
-    if (!_connected) return;
-    _debug(data, tag: 'SendData', debug: debug);
-    _channel?.sink.add(data);
-  }
-
-  void request(String route, {Uint8List? data, Function(dynamic res)? callback}) {
+  void request(String route, {Uint8List? data, WSRequestCallback? callback}) {
     final isCompressRoute = _compressRoute && _dict.containsKey(route);
 
     final msg = WSMessage(
@@ -168,35 +199,60 @@ class WSClient {
     final bytes = msg.encode();
     final package = WSPackage(pkgTypeData, body: bytes);
 
-    sendWithPackage(package);
+    _reqCached[msg.id] = WSTask(callback: callback);
+
+    _sendWithPackage(package);
   }
 
-  void ping() {
-    request('sys.ping');
+  Future<dynamic> requestAsync(String route, {Uint8List? data}) {
+    final isCompressRoute = _compressRoute && _dict.containsKey(route);
+
+    final msg = WSMessage(
+      ++_reqId,
+      msgTypeRequest,
+      isCompressRoute,
+      isCompressRoute ? _dict[route]! : route,
+      msg: data,
+      enabledEncodeString: false,
+    );
+    final bytes = msg.encode();
+    final package = WSPackage(pkgTypeData, body: bytes);
+    final completer = Completer<dynamic>();
+
+    _sendWithPackage(package);
+    _reqCached[msg.id] = WSTask(completer: completer);
+    return completer.future;
+  }
+
+  void _sendWithPackage(WSPackage package, {bool debug = false}) {
+    if (!_connected) return;
+    WSUtil.debug(package.toString(), tag: 'SendPackage', debug: debug);
+    _channel?.sink.add(package.encode());
   }
 
   void _onReceiveHandler(event) {
     if (event.runtimeType is String) {
-      _debug('暂不处理字符串类型的消息 -> $event');
+      WSUtil.debug('暂不处理字符串类型的消息 -> $event');
     } else if (event is Uint8List) {
       final packages = WSPackage.decode(event);
+
       for (var entry in packages) {
-        _debug(entry.toString(), tag: 'ReceiveData');
+        WSUtil.debug(entry.toString(), tag: 'ReceiveData');
         if (_map.containsKey(entry.type)) {
           _map[entry.type]?.call(entry);
         } else {
-          _debug('Type "${entry.type}" is not define.');
+          WSUtil.debug('Type "${entry.type}" is not define.');
         }
       }
     }
   }
 
   void _onErrorHandler(e) {
-    _debug('Socket exception:$e');
+    WSUtil.debug('Socket exception:$e');
   }
 
   void _onDoneHandler() {
-    _debug('Connect close.', tag: 'Done');
+    WSUtil.debug('Connect close.', tag: 'Done');
 
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
@@ -204,18 +260,11 @@ class WSClient {
 
     onDisconnect?.call();
   }
-
-  void _debug(dynamic out, {String? tag, bool debug = false}) {
-    if (!(isDebug || debug)) return;
-    if (tag != null) {
-      debugPrint('[WS-$tag]: $out');
-    } else {
-      debugPrint('[WS]: $out');
-    }
-  }
 }
 
-class WSProtocol {
+class WSUtil {
+  static bool enabledPrintDebug = true;
+
   static Uint8List strEncode(String str, {bool isCompress = false}) {
     final source = utf8.encode(str);
     if (isCompress) {
@@ -231,8 +280,18 @@ class WSProtocol {
     }
     return utf8.decode(body);
   }
+
+  static void debug(dynamic out, {String? tag, bool debug = false}) {
+    if (!(enabledPrintDebug || debug)) return;
+    if (tag != null) {
+      debugPrint('[WS-$tag]: $out');
+    } else {
+      debugPrint('[WS]: $out');
+    }
+  }
 }
 
+// 数据包.
 class WSPackage {
   WSPackage(this.type, {this.body});
 
@@ -275,7 +334,7 @@ class WSPackage {
     while (offset < bytes.length) {
       final type = bytes[offset++];
       length = ((bytes[offset++]) << 16 | (bytes[offset++]) << 8 | bytes[offset++]) >>> 0;
-      final body = length > 0 ? bytes.sublist(offset, length) : null;
+      final body = length > 0 ? bytes.sublist(offset, offset + length) : null;
       offset += length;
       pkgs.add(WSPackage(type, body: body));
     }
@@ -296,6 +355,7 @@ class WSPackage {
   static WSPackage handshakeACKPackage() => WSPackage(pkgTypeHandshakeAck);
 }
 
+// 消息内容.
 class WSMessage {
   WSMessage(
     this.id,
@@ -345,7 +405,7 @@ class WSMessage {
         if (route.length > 255) {
           throw Exception('Route max length is overflow!');
         }
-        routeData = WSProtocol.strEncode(route, isCompress: enabledEncodeString);
+        routeData = WSUtil.strEncode(route, isCompress: enabledEncodeString);
         len += routeData.length;
       }
     }
@@ -417,8 +477,8 @@ class WSMessage {
         final routeLen = bytes[offset++];
 
         if (routeLen > 0) {
-          final routeData = bytes.sublist(offset, routeLen);
-          route = WSProtocol.strDecode(
+          final routeData = bytes.sublist(offset, routeLen + offset);
+          route = WSUtil.strDecode(
             routeData,
             isCompress: enabledEncodeString,
           );
@@ -502,12 +562,9 @@ class WSMessage {
   }
 }
 
-// class WSController {
-//   WSController({
-//     this.onHandshake,
-//     this.onBroadcast,
-//     this.onDisconnect,
-//   });
-//
-//
-// }
+class WSTask {
+  WSTask({this.completer, this.callback});
+
+  Completer<dynamic>? completer;
+  WSRequestCallback? callback;
+}
