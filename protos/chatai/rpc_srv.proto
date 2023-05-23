@@ -1,0 +1,79 @@
+syntax = "proto3";
+option go_package = "./protos";
+
+import "data_info.proto";
+
+// Ping
+message ReqPing {
+  // 当前时间戳
+  int64 Timestamp = 1;
+}
+
+// Pong
+message ResPong {
+  // 当前时间戳
+  int64 Timestamp = 1;
+}
+
+// 请求鉴权信息
+message ReqAuthentication {
+  // 访问令牌s
+  string Token = 1;
+}
+
+// 返回鉴权信息
+message ResAuthentication {
+  StateInfo state = 1;
+  // 用户ID
+  int64 UserId = 2;
+  // 账号ID
+  int32 AccountId = 3;
+  // 居民ID
+  int32 ResidentId = 4;
+}
+
+// 请求创建机器人
+message ReqNewRobot {
+  // 机器人名称
+  string Name = 1;
+  // 机器人性别
+  int32 Gender = 2;
+  // 机器人属于那个系列
+  int32 Series = 3;
+  // 机器人标签
+  string Tags = 4;
+}
+
+// 返回创建机器人信息
+message ResNewRobot {
+  // 返回结果 -> 机器人信息
+  RobotInfo Data = 2;
+}
+
+// 请求机器人列表
+message ReqRobotList {
+  int64 UserId = 1;
+}
+
+// 返回机器人列表
+message ResRobotList {
+  // 返回结果->机器人列表
+  repeated RobotInfo Items = 2;
+}
+
+// 请求聊天 -> 文本类型
+message ReqChatTextMessage {
+  string MId = 1;
+  // 发送者ID
+  int64 From = 2;
+  // 接收者ID
+  int64 To = 3;
+  // 文本内容
+  string Content = 4;
+}
+
+// 返回聊天请求结果
+message ResChatMessage {
+  // 聊天信息
+  ChatMessageInfo payload = 1;
+}

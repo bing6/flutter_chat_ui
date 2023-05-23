@@ -1,9 +1,0 @@
-syntax = "proto3";
-option go_package = "./protos";
-import "protos/proto/common.proto";
-
-
-message RPCIdRes {
-  State State = 1;
-  int64 Data = 2;
-}

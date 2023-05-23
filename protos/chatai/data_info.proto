@@ -1,0 +1,60 @@
+syntax = "proto3";
+option go_package = "./protos";
+
+// 接口调用状态
+message StateInfo {
+  int32 Code = 1;
+  string Msg = 2;
+}
+
+// 机器人信息
+message RobotInfo {
+  // 唯一Id
+  int64 Id = 1;
+  // 机器人名称
+  string Name = 2;
+  // 机器人图片地址
+  string Character = 4;
+  // 头像图片地址
+  string Avatar = 5;
+  // 性别
+  int32 Gender = 6;
+  // 标签
+  string Tags = 7;
+  // 是否为默认使用
+  int32 IsDefault = 8;
+  // 机器人属于那个系列
+  int32 Series = 9;
+  // 记录更新时间
+  int64 UpdateAt = 10;
+  // 记录创建时间
+  int64 CreateAt = 11;
+}
+
+// 聊天信息内容类型
+enum ChatMessageContentType {
+  Text = 0;
+  Audio = 1;
+  Image = 2;
+  Json = 3;
+}
+
+// 聊天信息
+message ChatMessageInfo {
+  // 信息Id:UUId -> 聊天的唯一Id
+  string MId = 1;
+  // 回复Id:UUId -> 机器人回答时才有, 记录回复那一条聊天信息
+  string reply = 2;
+  // 发送者Id
+  int64 From = 3;
+  // 接收者Id
+  int64 To = 4;
+  // 聊天内容 -> 根据聊天类型存储的信息可能不同
+  string ContentData = 5;
+  // 聊天内容类型
+  ChatMessageContentType  ContentType = 6;
+  // 记录更新时间 -> 请求时可以不填
+  int64 UpdateAt = 7;
+  // 记录创建时间 -> 请求时可以不填
+  int64 CreateAt = 8;
+}

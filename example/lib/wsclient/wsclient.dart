@@ -5,8 +5,12 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'protos/data_info.pb.dart';
+import 'protos/error.pb.dart' as pitaya;
 
 // 包类型.
 const int pkgTypeHandshake = 0x01;
@@ -27,9 +31,19 @@ const msgRouteCodeBytes = 2;
 const msgIdMaxBytes = 5;
 const msgRouteLenBytes = 1;
 const msgRouteCodeMax = 0xFFFF;
-const msgCompressRouteMask = 0x1;
 
+const msgCompressRouteMask = 0x01;
 const msgTypeMask = 0x7;
+const msgGzipMask = 0x10;
+const msgErrorMask = 0x20;
+const msgRouteLengthMask = 0xFF;
+const msgHeadLength = 0x02;
+// errorMask            = 0x20
+// gzipMask             = 0x10
+// msgRouteCompressMask = 0x01
+// msgTypeMask          = 0x07
+// msgRouteLengthMask   = 0xFF
+// msgHeadLength        = 0x02
 
 // RPC请求回调. 序列化方式为Json时，返回Map, 为protoc时返回UInt8List.
 typedef WSRequestHandler = void Function(dynamic res, Exception? error);
@@ -39,7 +53,7 @@ typedef WSControllerOnHandshake = void Function();
 // 广播接收通知.
 typedef WSControllerOnBroadcast = void Function();
 // 接收到消息通用.
-typedef WSControllerOnMessage = void Function(Uint8List message);
+typedef WSControllerOnMessage = void Function(ChatMessageInfo message);
 // 断开连接通知.
 typedef WSControllerOnDisconnect = void Function();
 
@@ -67,7 +81,7 @@ class WSClient {
   WSControllerOnHandshake? onHandshake;
   WSControllerOnBroadcast? onBroadcast;
   WSControllerOnDisconnect? onDisconnect;
-  WSControllerOnMessage? onMessage;
+  WSControllerOnMessage? onChatMessage;
 
   // 握手信息.
   final dynamic handshakeData;
@@ -223,7 +237,10 @@ class WSClient {
   }
 
   void _onDataHandler(WSPackage pkg) {
-    final msg = WSMessage.decode(pkg.body!, enabledEncodeString: false);
+    final msgData = WSMessage.decode(pkg.body!, enabledEncodeString: false);
+    final msgError = msgData.first as bool;
+    final msg = msgData.last as WSMessage;
+
     dynamic payload;
     Exception? err;
 
@@ -242,6 +259,10 @@ class WSClient {
 
     WSUtil.debug(msg.toString(), tag: 'ReceiveMessage');
 
+    if (msgError) {
+      final pError = pitaya.Error.fromBuffer(msg.msg!);
+      err = WSError(pError.code, pError.msg, metadata: pError.metadata);
+    }
     if (msg.type == msgTypeResponse) {
       if (!_reqCached.containsKey(msg.id)) {
         return;
@@ -261,7 +282,9 @@ class WSClient {
       }
     } else if (msg.type == msgTypePush) {
       if (msg.route == 'game.chat.onmessage') {
-        onMessage?.call(msg.msg!);
+        final chatMsg = ChatMessageInfo.fromBuffer(msg.msg!);
+        onChatMessage?.call(chatMsg);
+        // onChatMessage?.call(msg.msg!);
       }
     }
   }
@@ -357,9 +380,6 @@ class WSPackage {
       length = ((bytes[offset++]) << 16 | (bytes[offset++]) << 8 | bytes[offset++]) >>> 0;
       final body = length > 0 ? bytes.sublist(offset, offset + length) : null;
       offset += length;
-      if (body != null && body!.length < length) {
-        debugPrint('lllllllllll 0>>>>');
-      }
       pkgs.add(WSPackage(type, body: body));
     }
     return pkgs;
@@ -467,26 +487,29 @@ class WSMessage {
     return buf.buffer.asUint8List();
   }
 
-  static WSMessage decode(
+  static List decode(
     Uint8List bytes, {
     bool enabledEncodeString = false,
   }) {
-    final bytesLen = bytes.length;
+    final data = ByteData.sublistView(bytes);
+    final bytesLen = data.lengthInBytes;
+
     var offset = 0;
     var id = 0;
     dynamic route;
 
-    // Parse flag.
-    final flag = bytes[offset++];
+    final flag = data.getInt8(offset++);
     final compressRoute = flag & msgCompressRouteMask;
+    final dataGzip = flag & msgGzipMask;
     final type = (flag >> 1) & msgTypeMask;
+    final error = flag & msgErrorMask;
 
     // Parse id.
     if (_msgHasId(type)) {
-      var m = bytes[offset];
+      var m = data.getInt8(offset);
       var i = 0;
       do {
-        m = bytes[offset];
+        m = data.getInt8(offset);
         id = id + ((m & 0x7f) * pow(2, (7 * i)).toInt());
         offset++;
         i++;
@@ -496,16 +519,16 @@ class WSMessage {
     // Parse route.
     if (_msgHasRoute(type)) {
       if (compressRoute > 0) {
-        route = (bytes[offset++]) << 8 | bytes[offset++];
+        route = data.getInt8(offset++) << 8 | data.getInt8(offset++);
       } else {
-        final routeLen = bytes[offset++];
+        final routeLen = data.getInt8(offset++);
 
         if (routeLen > 0) {
-          final routeData = bytes.sublist(offset, routeLen + offset);
-          route = WSUtil.strDecode(
-            routeData,
-            isCompress: enabledEncodeString,
-          );
+          final routeBytes = Uint8List(routeLen);
+          for (var i = 0; i < routeLen; i++) {
+            routeBytes[i] = data.getInt8(offset + i);
+          }
+          route = WSUtil.strDecode(routeBytes, isCompress: enabledEncodeString);
         } else {
           route = '';
         }
@@ -513,10 +536,22 @@ class WSMessage {
       }
     }
 
-    // Parse body.
-    final body = bytesLen - offset > 0 ? bytes.sublist(offset) : null;
+    dynamic body;
 
-    return WSMessage(
+    final payloadLength = bytesLen - offset;
+    if (payloadLength > 0) {
+      final payloadBytes = Uint8List(payloadLength);
+      for (var i = 0; i < payloadLength; i++) {
+        payloadBytes[i] = data.getInt8(offset + i);
+      }
+      if (dataGzip > 0) {
+        body = ZLibDecoder().convert(payloadBytes);
+      } else {
+        body = payloadBytes;
+      }
+    }
+
+    final res = WSMessage(
       id,
       type,
       compressRoute > 0,
@@ -524,6 +559,19 @@ class WSMessage {
       msg: body,
       enabledEncodeString: enabledEncodeString,
     );
+    return [error > 0, res];
+    // if (error > 0) {
+    //   final err = pitaya.Error.fromBuffer(body);
+    //   throw WSError(err.code, err.msg, metadata: err.metadata);
+    // }
+    // return WSMessage(
+    //   id,
+    //   type,
+    //   compressRoute > 0,
+    //   route,
+    //   msg: body,
+    //   enabledEncodeString: enabledEncodeString,
+    // );
   }
 
   static bool _msgHasId(int type) => type == msgTypeRequest || type == msgTypeResponse;
@@ -595,4 +643,25 @@ class WSCallbackObject {
 
   // 处理回调方法.
   WSRequestHandler? callback;
+}
+
+class WSError implements Exception {
+  WSError(
+    this.code,
+    this.msg, {
+    this.metadata,
+  });
+
+  String code;
+  String msg;
+  Map<String, String>? metadata;
+
+  static WSError createWithPitayaError(pitaya.Error error) => WSError(
+        error.code,
+        error.msg,
+        metadata: error.metadata,
+      );
+
+  @override
+  String toString() => 'Code:$code Msg:$msg Metadata:$metadata';
 }
