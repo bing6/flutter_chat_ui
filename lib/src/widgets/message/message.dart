@@ -233,13 +233,27 @@ class Message extends StatelessWidget {
               right: isMobile ? query.padding.right : 0,
             ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         textDirection: bubbleRtlAlignment == BubbleRtlAlignment.left
             ? null
             : TextDirection.ltr,
         children: [
           if (!currentUserIsAuthor && showUserAvatars) _avatarBuilder(),
+          if (currentUserIsAuthor)
+            Padding(
+              padding: InheritedChatTheme.of(context).theme.statusIconPadding,
+              child: showStatus
+                  ? GestureDetector(
+                      onLongPress: () =>
+                          onMessageStatusLongPress?.call(context, message),
+                      onTap: () => onMessageStatusTap?.call(context, message),
+                      child: customStatusBuilder != null
+                          ? customStatusBuilder!(message, context: context)
+                          : MessageStatus(status: message.status),
+                    )
+                  : null,
+            ),
           ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: messageWidth.toDouble(),
@@ -276,20 +290,7 @@ class Message extends StatelessWidget {
               ],
             ),
           ),
-          if (currentUserIsAuthor)
-            Padding(
-              padding: InheritedChatTheme.of(context).theme.statusIconPadding,
-              child: showStatus
-                  ? GestureDetector(
-                      onLongPress: () =>
-                          onMessageStatusLongPress?.call(context, message),
-                      onTap: () => onMessageStatusTap?.call(context, message),
-                      child: customStatusBuilder != null
-                          ? customStatusBuilder!(message, context: context)
-                          : MessageStatus(status: message.status),
-                    )
-                  : null,
-            ),
+          const SizedBox(width: 5),
           if (currentUserIsAuthor && showCurrentUserAvatar) _avatarBuilder(),
         ],
       ),
