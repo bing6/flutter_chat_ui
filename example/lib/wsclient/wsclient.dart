@@ -3,10 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'protos/data_info.pb.dart';
@@ -192,7 +190,7 @@ class WSClient {
 
   void _sendWithPackage(WSPackage package, {bool debug = false}) {
     if (!_connected) return;
-    WSUtil.debug(package.toString(), tag: 'SendPackage', debug: debug);
+    // WSUtil.debug(package.toString(), tag: 'SendPackage', debug: debug);
     _channel?.sink.add(package.encode());
   }
 
@@ -203,7 +201,7 @@ class WSClient {
       final packages = WSPackage.decode(event);
 
       for (var entry in packages) {
-        WSUtil.debug(entry.toString(), tag: 'ReceiveData');
+        // WSUtil.debug(entry.toString(), tag: 'ReceiveData');.
         if (_map.containsKey(entry.type)) {
           _map[entry.type]?.call(entry);
         } else {
@@ -233,7 +231,7 @@ class WSClient {
   }
 
   void _onHeartbeatHandler(WSPackage _) {
-    WSUtil.debug('Server heartbeat.', tag: 'Heartbeat');
+    // WSUtil.debug('Server heartbeat.', tag: 'Heartbeat');.
   }
 
   void _onDataHandler(WSPackage pkg) {
@@ -560,18 +558,6 @@ class WSMessage {
       enabledEncodeString: enabledEncodeString,
     );
     return [error > 0, res];
-    // if (error > 0) {
-    //   final err = pitaya.Error.fromBuffer(body);
-    //   throw WSError(err.code, err.msg, metadata: err.metadata);
-    // }
-    // return WSMessage(
-    //   id,
-    //   type,
-    //   compressRoute > 0,
-    //   route,
-    //   msg: body,
-    //   enabledEncodeString: enabledEncodeString,
-    // );
   }
 
   static bool _msgHasId(int type) => type == msgTypeRequest || type == msgTypeResponse;
