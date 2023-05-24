@@ -9,6 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'protos/data_info.pb.dart';
 import 'protos/error.pb.dart' as pitaya;
+import 'protos/kick.pb.dart';
 
 // 包类型.
 const int pkgTypeHandshake = 0x01;
@@ -54,6 +55,8 @@ typedef WSControllerOnBroadcast = void Function();
 typedef WSControllerOnMessage = void Function(ChatMessageInfo message);
 // 断开连接通知.
 typedef WSControllerOnDisconnect = void Function();
+// 被踢下线.
+typedef WSControllerOnKick = void Function();
 
 class WSClient {
   WSClient(
@@ -80,6 +83,7 @@ class WSClient {
   WSControllerOnBroadcast? onBroadcast;
   WSControllerOnDisconnect? onDisconnect;
   WSControllerOnMessage? onChatMessage;
+  WSControllerOnKick? onKick;
 
   // 握手信息.
   final dynamic handshakeData;
@@ -282,12 +286,16 @@ class WSClient {
       if (msg.route == 'game.chat.onmessage') {
         final chatMsg = ChatMessageInfo.fromBuffer(msg.msg!);
         onChatMessage?.call(chatMsg);
-        // onChatMessage?.call(msg.msg!);
+        // onChatMessage?.call(msg.msg!);.
       }
     }
   }
 
-  void _onKickHandler(WSPackage _) {}
+  void _onKickHandler(WSPackage package) {
+    WSUtil.debug(package);
+
+    onKick?.call();
+  }
 
   void _onErrorHandler(e) {
     WSUtil.debug('Socket exception:$e');

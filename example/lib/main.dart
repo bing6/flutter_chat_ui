@@ -137,6 +137,10 @@ class _ChatPageState extends State<ChatPage> {
     _client.onDisconnect = () {
       debugPrint('连接断开啦...');
     };
+    _client.onKick = () {
+      debugPrint('你被踢下线啦');
+    };
+
     _client.connect(Uri.parse('ws://127.0.0.1:3051'));
 
     return;
