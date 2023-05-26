@@ -141,7 +141,7 @@ class _ChatPageState extends State<ChatPage> {
       debugPrint('你被踢下线啦');
     };
 
-    _client.connect(Uri.parse('ws://127.0.0.1:3051'));
+    _client.connect(Uri.parse('ws://10.11.15.64:3051'));
 
     return;
     // _loadMessages();.
