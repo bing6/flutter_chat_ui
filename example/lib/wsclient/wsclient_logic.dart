@@ -16,6 +16,9 @@ extension WSClientLogic on WSClient {
   // 获取当前用户已有的机器人列表.
   Future<ResRobotList> robots() async {
     final res = await requestAsync('game.chat.robots');
+    if (res == null) {
+      return ResRobotList();
+    }
     return ResRobotList.fromBuffer(res);
   }
 
