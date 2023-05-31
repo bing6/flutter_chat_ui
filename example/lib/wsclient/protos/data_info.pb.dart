@@ -258,6 +258,8 @@ class ChatMessageInfo extends $pb.GeneratedMessage {
     ..e<ChatMessageContentType>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'ContentType', $pb.PbFieldType.OE, protoName: 'ContentType', defaultOrMaker: ChatMessageContentType.Text, valueOf: ChatMessageContentType.valueOf, enumValues: ChatMessageContentType.values)
     ..aInt64(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'UpdateAt', protoName: 'UpdateAt')
     ..aInt64(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'CreateAt', protoName: 'CreateAt')
+    ..a<$core.int>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'MessageType', $pb.PbFieldType.O3, protoName: 'MessageType')
+    ..m<$core.String, $core.String>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'metadata', entryClassName: 'ChatMessageInfo.MetadataEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS)
     ..hasRequiredFields = false
   ;
 
@@ -271,6 +273,8 @@ class ChatMessageInfo extends $pb.GeneratedMessage {
     ChatMessageContentType? contentType,
     $fixnum.Int64? updateAt,
     $fixnum.Int64? createAt,
+    $core.int? messageType,
+    $core.Map<$core.String, $core.String>? metadata,
   }) {
     final _result = create();
     if (mId != null) {
@@ -296,6 +300,12 @@ class ChatMessageInfo extends $pb.GeneratedMessage {
     }
     if (createAt != null) {
       _result.createAt = createAt;
+    }
+    if (messageType != null) {
+      _result.messageType = messageType;
+    }
+    if (metadata != null) {
+      _result.metadata.addAll(metadata);
     }
     return _result;
   }
@@ -391,5 +401,17 @@ class ChatMessageInfo extends $pb.GeneratedMessage {
   $core.bool hasCreateAt() => $_has(7);
   @$pb.TagNumber(8)
   void clearCreateAt() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get messageType => $_getIZ(8);
+  @$pb.TagNumber(9)
+  set messageType($core.int v) { $_setSignedInt32(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasMessageType() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearMessageType() => clearField(9);
+
+  @$pb.TagNumber(10)
+  $core.Map<$core.String, $core.String> get metadata => $_getMap(9);
 }
 

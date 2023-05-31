@@ -608,3 +608,133 @@ class ResChatMessage extends $pb.GeneratedMessage {
   $0.ChatMessageInfo ensurePayload() => $_ensure(0);
 }
 
+class ReqChatListArgs extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ReqChatListArgs', createEmptyInstance: create)
+    ..aInt64(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'GroupId', protoName: 'GroupId')
+    ..aInt64(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'OffsetId', protoName: 'OffsetId')
+    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'limit', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false
+  ;
+
+  ReqChatListArgs._() : super();
+  factory ReqChatListArgs({
+    $fixnum.Int64? groupId,
+    $fixnum.Int64? offsetId,
+    $core.int? limit,
+  }) {
+    final _result = create();
+    if (groupId != null) {
+      _result.groupId = groupId;
+    }
+    if (offsetId != null) {
+      _result.offsetId = offsetId;
+    }
+    if (limit != null) {
+      _result.limit = limit;
+    }
+    return _result;
+  }
+  factory ReqChatListArgs.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ReqChatListArgs.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ReqChatListArgs clone() => ReqChatListArgs()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ReqChatListArgs copyWith(void Function(ReqChatListArgs) updates) => super.copyWith((message) => updates(message as ReqChatListArgs)) as ReqChatListArgs; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ReqChatListArgs create() => ReqChatListArgs._();
+  ReqChatListArgs createEmptyInstance() => create();
+  static $pb.PbList<ReqChatListArgs> createRepeated() => $pb.PbList<ReqChatListArgs>();
+  @$core.pragma('dart2js:noInline')
+  static ReqChatListArgs getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ReqChatListArgs>(create);
+  static ReqChatListArgs? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get groupId => $_getI64(0);
+  @$pb.TagNumber(1)
+  set groupId($fixnum.Int64 v) { $_setInt64(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasGroupId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearGroupId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $fixnum.Int64 get offsetId => $_getI64(1);
+  @$pb.TagNumber(2)
+  set offsetId($fixnum.Int64 v) { $_setInt64(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasOffsetId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearOffsetId() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get limit => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set limit($core.int v) { $_setSignedInt32(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasLimit() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearLimit() => clearField(3);
+}
+
+class ResChatListData extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ResChatListData', createEmptyInstance: create)
+    ..aInt64(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'OffsetId', protoName: 'OffsetId')
+    ..pc<$0.ChatMessageInfo>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Items', $pb.PbFieldType.PM, protoName: 'Items', subBuilder: $0.ChatMessageInfo.create)
+    ..hasRequiredFields = false
+  ;
+
+  ResChatListData._() : super();
+  factory ResChatListData({
+    $fixnum.Int64? offsetId,
+    $core.Iterable<$0.ChatMessageInfo>? items,
+  }) {
+    final _result = create();
+    if (offsetId != null) {
+      _result.offsetId = offsetId;
+    }
+    if (items != null) {
+      _result.items.addAll(items);
+    }
+    return _result;
+  }
+  factory ResChatListData.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ResChatListData.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ResChatListData clone() => ResChatListData()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ResChatListData copyWith(void Function(ResChatListData) updates) => super.copyWith((message) => updates(message as ResChatListData)) as ResChatListData; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ResChatListData create() => ResChatListData._();
+  ResChatListData createEmptyInstance() => create();
+  static $pb.PbList<ResChatListData> createRepeated() => $pb.PbList<ResChatListData>();
+  @$core.pragma('dart2js:noInline')
+  static ResChatListData getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ResChatListData>(create);
+  static ResChatListData? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get offsetId => $_getI64(0);
+  @$pb.TagNumber(1)
+  set offsetId($fixnum.Int64 v) { $_setInt64(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasOffsetId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearOffsetId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.List<$0.ChatMessageInfo> get items => $_getList(1);
+}
+

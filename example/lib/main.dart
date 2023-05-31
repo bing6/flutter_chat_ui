@@ -59,6 +59,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+
     final handshakeData = {
       'Sys': {
         'platform': 'mac-1',
@@ -117,6 +118,10 @@ class _ChatPageState extends State<ChatPage> {
         );
         WSUtil.debug('机器人创建成功, 可以开始聊天啦!', tag: 'Test');
         WSUtil.debug('名称:${robots.items.first.name}', tag: 'Test');
+
+        var ms = await _client.getHistoryMessageList(robots.items.first.id.toInt());
+
+        WSUtil.debug('聊天记录:${ms}');
         return;
       }
 
@@ -126,6 +131,7 @@ class _ChatPageState extends State<ChatPage> {
         series: 1,
         tags: '制服,大波,碧眼,白发',
       ));
+
       _robotUser = types.User(
         id: robot.data.id.toString(),
         lastName: robot.data.name,
@@ -141,7 +147,7 @@ class _ChatPageState extends State<ChatPage> {
       debugPrint('你被踢下线啦');
     };
 
-    // _client.connect(Uri.parse('ws://10.11.15.64:3051'));.
+    // _client.connect(Uri.parse('ws://10.11.15.64:3051'));
     _client.connect(Uri.parse('ws://8.140.52.132:3051'));
 
     return;

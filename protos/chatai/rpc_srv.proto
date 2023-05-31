@@ -77,3 +77,16 @@ message ResChatMessage {
   // 聊天信息
   ChatMessageInfo payload = 1;
 }
+
+// 查询聊天记录列表请求参数
+message ReqChatListArgs {
+  int64 GroupId = 1; // 这个就是机器人ID
+  int64 OffsetId = 2; // 根据该ID位置查询数据, 默认为0, 可不传, 将从最后一条数据开始查询
+  int32 limit = 3; // 分页数量，默认为10, 可不传
+}
+
+// 查询聊天记录列表反回数据
+message ResChatListData {
+  int64 OffsetId = 1;
+  repeated ChatMessageInfo Items = 2;
+}

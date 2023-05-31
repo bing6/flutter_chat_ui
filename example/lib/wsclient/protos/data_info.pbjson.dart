@@ -63,8 +63,21 @@ const ChatMessageInfo$json = const {
     const {'1': 'ContentType', '3': 6, '4': 1, '5': 14, '6': '.ChatMessageContentType', '10': 'ContentType'},
     const {'1': 'UpdateAt', '3': 7, '4': 1, '5': 3, '10': 'UpdateAt'},
     const {'1': 'CreateAt', '3': 8, '4': 1, '5': 3, '10': 'CreateAt'},
+    const {'1': 'MessageType', '3': 9, '4': 1, '5': 5, '10': 'MessageType'},
+    const {'1': 'metadata', '3': 10, '4': 3, '5': 11, '6': '.ChatMessageInfo.MetadataEntry', '10': 'metadata'},
   ],
+  '3': const [ChatMessageInfo_MetadataEntry$json],
+};
+
+@$core.Deprecated('Use chatMessageInfoDescriptor instead')
+const ChatMessageInfo_MetadataEntry$json = const {
+  '1': 'MetadataEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+  '7': const {'7': true},
 };
 
 /// Descriptor for `ChatMessageInfo`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List chatMessageInfoDescriptor = $convert.base64Decode('Cg9DaGF0TWVzc2FnZUluZm8SEAoDTUlkGAEgASgJUgNNSWQSFAoFcmVwbHkYAiABKAlSBXJlcGx5EhIKBEZyb20YAyABKANSBEZyb20SDgoCVG8YBCABKANSAlRvEiAKC0NvbnRlbnREYXRhGAUgASgJUgtDb250ZW50RGF0YRI5CgtDb250ZW50VHlwZRgGIAEoDjIXLkNoYXRNZXNzYWdlQ29udGVudFR5cGVSC0NvbnRlbnRUeXBlEhoKCFVwZGF0ZUF0GAcgASgDUghVcGRhdGVBdBIaCghDcmVhdGVBdBgIIAEoA1IIQ3JlYXRlQXQ=');
+final $typed_data.Uint8List chatMessageInfoDescriptor = $convert.base64Decode('Cg9DaGF0TWVzc2FnZUluZm8SEAoDTUlkGAEgASgJUgNNSWQSFAoFcmVwbHkYAiABKAlSBXJlcGx5EhIKBEZyb20YAyABKANSBEZyb20SDgoCVG8YBCABKANSAlRvEiAKC0NvbnRlbnREYXRhGAUgASgJUgtDb250ZW50RGF0YRI5CgtDb250ZW50VHlwZRgGIAEoDjIXLkNoYXRNZXNzYWdlQ29udGVudFR5cGVSC0NvbnRlbnRUeXBlEhoKCFVwZGF0ZUF0GAcgASgDUghVcGRhdGVBdBIaCghDcmVhdGVBdBgIIAEoA1IIQ3JlYXRlQXQSIAoLTWVzc2FnZVR5cGUYCSABKAVSC01lc3NhZ2VUeXBlEjoKCG1ldGFkYXRhGAogAygLMh4uQ2hhdE1lc3NhZ2VJbmZvLk1ldGFkYXRhRW50cnlSCG1ldGFkYXRhGjsKDU1ldGFkYXRhRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKAlSBXZhbHVlOgI4AQ==');

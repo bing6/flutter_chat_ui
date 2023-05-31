@@ -117,3 +117,26 @@ const ResChatMessage$json = const {
 
 /// Descriptor for `ResChatMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List resChatMessageDescriptor = $convert.base64Decode('Cg5SZXNDaGF0TWVzc2FnZRIqCgdwYXlsb2FkGAEgASgLMhAuQ2hhdE1lc3NhZ2VJbmZvUgdwYXlsb2Fk');
+@$core.Deprecated('Use reqChatListArgsDescriptor instead')
+const ReqChatListArgs$json = const {
+  '1': 'ReqChatListArgs',
+  '2': const [
+    const {'1': 'GroupId', '3': 1, '4': 1, '5': 3, '10': 'GroupId'},
+    const {'1': 'OffsetId', '3': 2, '4': 1, '5': 3, '10': 'OffsetId'},
+    const {'1': 'limit', '3': 3, '4': 1, '5': 5, '10': 'limit'},
+  ],
+};
+
+/// Descriptor for `ReqChatListArgs`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List reqChatListArgsDescriptor = $convert.base64Decode('Cg9SZXFDaGF0TGlzdEFyZ3MSGAoHR3JvdXBJZBgBIAEoA1IHR3JvdXBJZBIaCghPZmZzZXRJZBgCIAEoA1IIT2Zmc2V0SWQSFAoFbGltaXQYAyABKAVSBWxpbWl0');
+@$core.Deprecated('Use resChatListDataDescriptor instead')
+const ResChatListData$json = const {
+  '1': 'ResChatListData',
+  '2': const [
+    const {'1': 'OffsetId', '3': 1, '4': 1, '5': 3, '10': 'OffsetId'},
+    const {'1': 'Items', '3': 2, '4': 3, '5': 11, '6': '.ChatMessageInfo', '10': 'Items'},
+  ],
+};
+
+/// Descriptor for `ResChatListData`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List resChatListDataDescriptor = $convert.base64Decode('Cg9SZXNDaGF0TGlzdERhdGESGgoIT2Zmc2V0SWQYASABKANSCE9mZnNldElkEiYKBUl0ZW1zGAIgAygLMhAuQ2hhdE1lc3NhZ2VJbmZvUgVJdGVtcw==');

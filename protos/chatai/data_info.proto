@@ -57,4 +57,8 @@ message ChatMessageInfo {
   int64 UpdateAt = 7;
   // 记录创建时间 -> 请求时可以不填
   int64 CreateAt = 8;
+  // 消息类型: 1 = 用户发送的, 2 = 机器人发送的, 4 =  系统消息
+  int32 MessageType = 9;
+  // 消息原信息
+  map<string, string> metadata = 10;
 }
