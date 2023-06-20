@@ -41,7 +41,7 @@ class ChatPage extends StatefulWidget {
 }
 
 const String userToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNTc1NzYwNjIzNzAyMDE2MDAiLCJzdWIiOjUwMDAsImV4cCI6MTY4NjczNDM3NiwiaXNzIjoiMzQyNjE1MjYzNjAwMDU0MjcyIiwicmVzIjoyMDAwMDIsInNwYSI6MTc0LCJpc19hZG1pbiI6MCwiaWF0IjoxNjg0MTQyMzc2fQ.GF5WCN1GEpK6fhDgXDZtpC1eLKmuhQB0ADf1pajzRb0';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNzA1Njk0OTA3NTQzMTAxNDQiLCJzdWIiOjUwMDAsImV4cCI6MTY4OTgzMjI1MSwiaXNzIjoiMzQyNjE1MjYzNjAwMDU0MjcyIiwicmVzIjoyMDAwMDIsInNwYSI6MTc0LCJpc19hZG1pbiI6MCwiaWF0IjoxNjg3MjQwMjUxfQ.v9hxcdfk9RgD46dbIEa4VdI2C64n83SFmKsbsDAC57k';
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
@@ -112,6 +112,10 @@ class _ChatPageState extends State<ChatPage> {
 
       WSUtil.debug('当前用户拥有${robots.items.length}个机器人', tag: 'Test');
       if (robots.items.isNotEmpty) {
+        for (var item in robots.items) {
+          WSUtil.debug("99 => LinkID => ${item.linkId}");
+        }
+
         _robotUser = types.User(
           id: robots.items.first.id.toString(),
           lastName: robots.items.first.name,
@@ -130,6 +134,7 @@ class _ChatPageState extends State<ChatPage> {
         gender: 0,
         series: 1,
         tags: '制服,大波,碧眼,白发',
+        linkId: 3345678,
       ));
 
       _robotUser = types.User(

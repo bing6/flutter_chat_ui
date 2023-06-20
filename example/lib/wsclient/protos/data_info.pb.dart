@@ -87,6 +87,7 @@ class RobotInfo extends $pb.GeneratedMessage {
     ..a<$core.int>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Series', $pb.PbFieldType.O3, protoName: 'Series')
     ..aInt64(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'UpdateAt', protoName: 'UpdateAt')
     ..aInt64(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'CreateAt', protoName: 'CreateAt')
+    ..a<$core.int>(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'LinkId', $pb.PbFieldType.O3, protoName: 'LinkId')
     ..hasRequiredFields = false
   ;
 
@@ -102,6 +103,7 @@ class RobotInfo extends $pb.GeneratedMessage {
     $core.int? series,
     $fixnum.Int64? updateAt,
     $fixnum.Int64? createAt,
+    $core.int? linkId,
   }) {
     final _result = create();
     if (id != null) {
@@ -133,6 +135,9 @@ class RobotInfo extends $pb.GeneratedMessage {
     }
     if (createAt != null) {
       _result.createAt = createAt;
+    }
+    if (linkId != null) {
+      _result.linkId = linkId;
     }
     return _result;
   }
@@ -246,6 +251,15 @@ class RobotInfo extends $pb.GeneratedMessage {
   $core.bool hasCreateAt() => $_has(9);
   @$pb.TagNumber(11)
   void clearCreateAt() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.int get linkId => $_getIZ(10);
+  @$pb.TagNumber(12)
+  set linkId($core.int v) { $_setSignedInt32(10, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasLinkId() => $_has(10);
+  @$pb.TagNumber(12)
+  void clearLinkId() => clearField(12);
 }
 
 class ChatMessageInfo extends $pb.GeneratedMessage {

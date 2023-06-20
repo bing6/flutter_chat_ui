@@ -250,6 +250,7 @@ class ReqNewRobot extends $pb.GeneratedMessage {
     ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Gender', $pb.PbFieldType.O3, protoName: 'Gender')
     ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Series', $pb.PbFieldType.O3, protoName: 'Series')
     ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'Tags', protoName: 'Tags')
+    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'LinkId', $pb.PbFieldType.O3, protoName: 'LinkId')
     ..hasRequiredFields = false
   ;
 
@@ -259,6 +260,7 @@ class ReqNewRobot extends $pb.GeneratedMessage {
     $core.int? gender,
     $core.int? series,
     $core.String? tags,
+    $core.int? linkId,
   }) {
     final _result = create();
     if (name != null) {
@@ -272,6 +274,9 @@ class ReqNewRobot extends $pb.GeneratedMessage {
     }
     if (tags != null) {
       _result.tags = tags;
+    }
+    if (linkId != null) {
+      _result.linkId = linkId;
     }
     return _result;
   }
@@ -331,6 +336,15 @@ class ReqNewRobot extends $pb.GeneratedMessage {
   $core.bool hasTags() => $_has(3);
   @$pb.TagNumber(4)
   void clearTags() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.int get linkId => $_getIZ(4);
+  @$pb.TagNumber(5)
+  set linkId($core.int v) { $_setSignedInt32(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasLinkId() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearLinkId() => clearField(5);
 }
 
 class ResNewRobot extends $pb.GeneratedMessage {

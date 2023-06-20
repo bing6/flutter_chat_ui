@@ -1,6 +1,12 @@
 syntax = "proto3";
 option go_package = "./protos";
 
+
+enum  RouteType  {
+  Default = 0;
+}
+
+
 // 接口调用状态
 message StateInfo {
   int32 Code = 1;
@@ -29,6 +35,8 @@ message RobotInfo {
   int64 UpdateAt = 10;
   // 记录创建时间
   int64 CreateAt = 11;
+  // 关联ID
+  int32 LinkId = 12;
 }
 
 // 聊天信息内容类型

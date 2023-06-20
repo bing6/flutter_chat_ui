@@ -42,6 +42,8 @@ message ReqNewRobot {
   int32 Series = 3;
   // 机器人标签
   string Tags = 4;
+  // 关联ID
+  int32 LinkId = 5;
 }
 
 // 返回创建机器人信息

@@ -8,6 +8,16 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
+@$core.Deprecated('Use routeTypeDescriptor instead')
+const RouteType$json = const {
+  '1': 'RouteType',
+  '2': const [
+    const {'1': 'Default', '2': 0},
+  ],
+};
+
+/// Descriptor for `RouteType`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List routeTypeDescriptor = $convert.base64Decode('CglSb3V0ZVR5cGUSCwoHRGVmYXVsdBAA');
 @$core.Deprecated('Use chatMessageContentTypeDescriptor instead')
 const ChatMessageContentType$json = const {
   '1': 'ChatMessageContentType',
@@ -46,11 +56,12 @@ const RobotInfo$json = const {
     const {'1': 'Series', '3': 9, '4': 1, '5': 5, '10': 'Series'},
     const {'1': 'UpdateAt', '3': 10, '4': 1, '5': 3, '10': 'UpdateAt'},
     const {'1': 'CreateAt', '3': 11, '4': 1, '5': 3, '10': 'CreateAt'},
+    const {'1': 'LinkId', '3': 12, '4': 1, '5': 5, '10': 'LinkId'},
   ],
 };
 
 /// Descriptor for `RobotInfo`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List robotInfoDescriptor = $convert.base64Decode('CglSb2JvdEluZm8SDgoCSWQYASABKANSAklkEhIKBE5hbWUYAiABKAlSBE5hbWUSHAoJQ2hhcmFjdGVyGAQgASgJUglDaGFyYWN0ZXISFgoGQXZhdGFyGAUgASgJUgZBdmF0YXISFgoGR2VuZGVyGAYgASgFUgZHZW5kZXISEgoEVGFncxgHIAEoCVIEVGFncxIcCglJc0RlZmF1bHQYCCABKAVSCUlzRGVmYXVsdBIWCgZTZXJpZXMYCSABKAVSBlNlcmllcxIaCghVcGRhdGVBdBgKIAEoA1IIVXBkYXRlQXQSGgoIQ3JlYXRlQXQYCyABKANSCENyZWF0ZUF0');
+final $typed_data.Uint8List robotInfoDescriptor = $convert.base64Decode('CglSb2JvdEluZm8SDgoCSWQYASABKANSAklkEhIKBE5hbWUYAiABKAlSBE5hbWUSHAoJQ2hhcmFjdGVyGAQgASgJUglDaGFyYWN0ZXISFgoGQXZhdGFyGAUgASgJUgZBdmF0YXISFgoGR2VuZGVyGAYgASgFUgZHZW5kZXISEgoEVGFncxgHIAEoCVIEVGFncxIcCglJc0RlZmF1bHQYCCABKAVSCUlzRGVmYXVsdBIWCgZTZXJpZXMYCSABKAVSBlNlcmllcxIaCghVcGRhdGVBdBgKIAEoA1IIVXBkYXRlQXQSGgoIQ3JlYXRlQXQYCyABKANSCENyZWF0ZUF0EhYKBkxpbmtJZBgMIAEoBVIGTGlua0lk');
 @$core.Deprecated('Use chatMessageInfoDescriptor instead')
 const ChatMessageInfo$json = const {
   '1': 'ChatMessageInfo',

@@ -59,11 +59,12 @@ const ReqNewRobot$json = const {
     const {'1': 'Gender', '3': 2, '4': 1, '5': 5, '10': 'Gender'},
     const {'1': 'Series', '3': 3, '4': 1, '5': 5, '10': 'Series'},
     const {'1': 'Tags', '3': 4, '4': 1, '5': 9, '10': 'Tags'},
+    const {'1': 'LinkId', '3': 5, '4': 1, '5': 5, '10': 'LinkId'},
   ],
 };
 
 /// Descriptor for `ReqNewRobot`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List reqNewRobotDescriptor = $convert.base64Decode('CgtSZXFOZXdSb2JvdBISCgROYW1lGAEgASgJUgROYW1lEhYKBkdlbmRlchgCIAEoBVIGR2VuZGVyEhYKBlNlcmllcxgDIAEoBVIGU2VyaWVzEhIKBFRhZ3MYBCABKAlSBFRhZ3M=');
+final $typed_data.Uint8List reqNewRobotDescriptor = $convert.base64Decode('CgtSZXFOZXdSb2JvdBISCgROYW1lGAEgASgJUgROYW1lEhYKBkdlbmRlchgCIAEoBVIGR2VuZGVyEhYKBlNlcmllcxgDIAEoBVIGU2VyaWVzEhIKBFRhZ3MYBCABKAlSBFRhZ3MSFgoGTGlua0lkGAUgASgFUgZMaW5rSWQ=');
 @$core.Deprecated('Use resNewRobotDescriptor instead')
 const ResNewRobot$json = const {
   '1': 'ResNewRobot',
