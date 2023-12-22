@@ -49,6 +49,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Chat(
+          messageContainerCrossAxisAlignment: CrossAxisAlignment.start,
           reverse: false,
           messages: _messages,
           onAttachmentPressed: _handleAttachmentPressed,
