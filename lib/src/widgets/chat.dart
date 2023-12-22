@@ -97,7 +97,11 @@ class Chat extends StatefulWidget {
     this.useTopSafeAreaInset,
     this.videoMessageBuilder,
     this.reverse = true,
+    this.messageContainerCrossAxisAlignment = CrossAxisAlignment.center,
   });
+
+
+  final CrossAxisAlignment messageContainerCrossAxisAlignment;
 
   final bool reverse;
 
