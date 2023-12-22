@@ -25,7 +25,10 @@ class ChatList extends StatefulWidget {
     this.scrollPhysics,
     this.typingIndicatorOptions,
     required this.useTopSafeAreaInset,
+    this.reverse = true,
   });
+
+  final bool reverse;
 
   /// A custom widget at the bottom of the list.
   final Widget? bottomWidget;
@@ -159,7 +162,7 @@ class _ChatListState extends State<ChatList>
           controller: widget.scrollController,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           physics: widget.scrollPhysics,
-          reverse: true,
+          reverse: widget.reverse,
           slivers: [
             if (widget.bottomWidget != null)
               SliverToBoxAdapter(child: widget.bottomWidget),

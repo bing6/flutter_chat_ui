@@ -96,7 +96,10 @@ class Chat extends StatefulWidget {
     this.userAgent,
     this.useTopSafeAreaInset,
     this.videoMessageBuilder,
+    this.reverse = true,
   });
+
+  final bool reverse;
 
   /// See [Message.audioMessageBuilder].
   final Widget Function(types.AudioMessage, {required int messageWidth})?
@@ -433,6 +436,7 @@ class ChatState extends State<Chat> {
                                     BoxConstraints constraints,
                                   ) =>
                                       ChatList(
+                                        reverse: widget.reverse,
                                     bottomWidget: widget.listBottomWidget,
                                     bubbleRtlAlignment:
                                         widget.bubbleRtlAlignment!,
