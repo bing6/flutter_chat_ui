@@ -13,6 +13,7 @@ import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(const MyApp()));
@@ -39,11 +40,24 @@ class _ChatPageState extends State<ChatPage> {
   final _user = const types.User(
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
+  final AutoScrollController _scrollController = AutoScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+    tt();
+  }
+
+  void tt() async {
+    print("11111 - 2");
+    // await Future.delayed(Duration(seconds: 2));
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeInQuad,
+    );
+    print("11111 - 3");
   }
 
   @override
@@ -60,6 +74,7 @@ class _ChatPageState extends State<ChatPage> {
           showUserNames: true,
           user: _user,
           showCurrentUserAvatar: true,
+          scrollController: _scrollController,
         ),
       );
 
@@ -68,6 +83,8 @@ class _ChatPageState extends State<ChatPage> {
       _messages.add(message);
       // _messages.insert(0, message);
     });
+
+    tt();
   }
 
   void _handleAttachmentPressed() {
@@ -165,8 +182,10 @@ class _ChatPageState extends State<ChatPage> {
 
       if (message.uri.startsWith('http')) {
         try {
-          final index = _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
+          final index =
+              _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage =
+              (_messages[index] as types.FileMessage).copyWith(
             isLoading: true,
           );
 
@@ -185,8 +204,10 @@ class _ChatPageState extends State<ChatPage> {
             await file.writeAsBytes(bytes);
           }
         } finally {
-          final index = _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
+          final index =
+              _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage =
+              (_messages[index] as types.FileMessage).copyWith(
             isLoading: null,
           );
 
@@ -227,7 +248,9 @@ class _ChatPageState extends State<ChatPage> {
 
   void _loadMessages() async {
     final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List).map((e) => types.Message.fromJson(e as Map<String, dynamic>)).toList();
+    final messages = (jsonDecode(response) as List)
+        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+        .toList();
 
     setState(() {
       _messages = messages;
